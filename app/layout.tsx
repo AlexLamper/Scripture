@@ -30,10 +30,6 @@ export default function RootLayout({
   return (
     <html lang="en">
         <head>
-          {/* <Head>
-            <title>{String(metadata.title) ?? "Default Title"}</title>
-            <meta name="description" content={metadata.description ?? "Default description"} />
-          </Head> */}
           <title>Scripture</title>
         </head>
         <body className="antialiased">
