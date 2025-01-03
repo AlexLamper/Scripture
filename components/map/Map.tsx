@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import MarkerButton from "./MarkerButton";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import { useLocale } from "next-intl"; // Import the useLocale hook
 
 const Map = () => {
   const [sections, setSections] = useState<any[]>([]);
@@ -13,6 +14,7 @@ const Map = () => {
   const supabase = createClient();
   const router = useRouter();
   const [loggedInUser, setLoggedInUser] = useState<string>("User");
+  const locale = useLocale(); // Get the current locale (language)
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -38,17 +40,7 @@ const Map = () => {
       try {
         const { data: sectionsData, error: sectionsError } = await supabase
           .from("sections")
-          .select(`
-            section_id,
-            title,
-            markers:markers (
-              marker_id,
-              name,
-              completed,
-              is_first_marker,
-              is_last_marker
-            )
-          `);
+          .select(`section_id, title, markers:markers (marker_id, name, completed, is_first_marker, is_last_marker)`);
 
         if (sectionsError) {
           throw new Error(`Error fetching sections: ${sectionsError.message}`);
@@ -94,7 +86,7 @@ const Map = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-full">
-        <p className="text-gray-600 text-lg">Loading map...</p>
+        <p className="text-gray-600 text-lg">{locale === 'nl' ? 'Kaart laden...' : 'Loading map...'}</p>
       </div>
     );
   }
@@ -103,7 +95,7 @@ const Map = () => {
     return (
       <div className="flex justify-center items-center h-full">
         <div className="bg-red-100 text-red-800 border border-red-300 rounded-md p-4">
-          <p className="font-semibold">Error:</p>
+          <p className="font-semibold">{locale === 'nl' ? 'Fout:' : 'Error:'}</p>
           <p>{error}</p>
         </div>
       </div>
@@ -112,7 +104,9 @@ const Map = () => {
 
   return (
     <div className="w-full h-full overflow-auto p-6 space-y-10 map-container">
-      <h3 className="text-3xl font-bold text-center mb-8">Welcome back {loggedInUser}</h3>
+      <h3 className="text-3xl font-bold text-center mb-8">
+        {locale === "nl" ? `Welkom terug ${loggedInUser}` : `Welcome back ${loggedInUser}`}
+      </h3>
 
       <style jsx global>{`
         .map-container {
